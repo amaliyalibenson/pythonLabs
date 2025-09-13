@@ -13,4 +13,4 @@
 ![nomer 2](/images/lab01/ex06.png)
 ##### Задание №7
 ![nomer 2](/images/lab01/ex07.png)
-####🤍
+🤍
