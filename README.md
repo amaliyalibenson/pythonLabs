@@ -1,1 +1,1 @@
-# pythonLabs
+# ЛР1
