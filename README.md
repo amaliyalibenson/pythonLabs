@@ -1,8 +1,5 @@
 # ЛР1
 ### Задание №1
-`name = str(input('Имя: '))
-age = int(input('Возраст: '))
-print('Привет, '+name+'! Через год тебе будет '+str(age+1)+'.')`
 ![имя и возраст](/images/lab01/ex01.png)
 ### Задание №2
 ![nomer 2](/images/lab01/ex02.png)
