@@ -1,6 +1,3 @@
-# ЛР2
-### Задание А №1
-```python
 def normalize(text: str, *, casefold: bool = True, yo2e: bool = True) -> str:
     '''
     Если casefold=True — привести к casefold
@@ -21,11 +18,9 @@ def normalize(text: str, *, casefold: bool = True, yo2e: bool = True) -> str:
     text = text.strip()#подрезаем кончики
 
     return text
-```
-![normalize](/images/lab03/normalize.png)
 
-### Задание А №2
-```python
+
+
 def tokenize(text: str) -> list[str]:
     '''
     Разбить на «слова» по небуквенно-цифровым разделителям.
@@ -57,11 +52,9 @@ def tokenize(text: str) -> list[str]:
                 res.append(slovo) #добавляем слово
                 slovo='' #освобождаем ячейку для след слова
     return res
-```
-![tokenize](/images/lab03/tokenize.png)
 
-### Задание А №3+№4
-```python
+
+
 def count_freq(tokens: list[str]) -> dict[str, int]:
     '''
     Подсчитать частоты, вернуть словарь слово → количество
@@ -79,45 +72,17 @@ def top_n(freq: dict[str, int], n: int = 5) -> list[tuple[str, int]]:
     '''
     kolvo= list(count_freq(freq).items()) #создаем с помощью айтемс список кортежей и делаем его полноценным списком (без "dict_items")
     return kolvo[:n]
-```
-![count](/images/lab03/count_freq+top_n.png)
 
-### Задание B со звездочкой
-```python
-from sys import *
-from src.lib.text import normalize, tokenize, count_freq, top_n
-TABLE_MODE = 1  #константа
 
-def main(): #читаем весь ввод из stdin (до EOF(end of file)(ctr+D))
 
-    text = stdin.read() #прочитали все там
-    if not text.strip(): #если пустота в вводе
-        return "нет входных данных"
 
-    #само задание, называется как я пон "конвейер обработки"
-    normalized_text = normalize(text)
-    tokens = tokenize(normalized_text)
-    count_word = count_freq(tokens)
-    top_words = top_n(count_word, 5)
-    print("Всего слов:", len(tokens))
-    print("Уникальных слов:", len(count_word))
+'''n="ПрИвЕт\nМИр\t"
+print(normalize(n))
 
-    #со звездочкой
-    if TABLE_MODE:
-        maxword= max(len(x) for x,y in top_words) #максимальная длина слова, ширина столбца
-        #заголовок таблицы
-        print("| слово" + " " * (maxword - 5) + " | частота |")
-        print("|" + "❀" * (maxword + 2) + "|⁺˚*•̩̩͙✩•̩̩͙*˚⁺|")
-        #данные
-        for word, count in top_words:
-            print(f"│ {word:{maxword}} │ {count:7} │")
-    else:
-        print("Топ-5:")
-        for word, count in top_words:
-            print(f"{word}:{count}")
+t="привет мир"
+print(tokenize(t))
 
-#точка входа для запуска скрипта
-if __name__ == "__main__":
-    main()
-```
-![exB](/images/lab03/exB.png)
+ct=["a","b","a","c","b","a"]
+print(count_freq(ct), top_n(ct,2))
+'''
+
