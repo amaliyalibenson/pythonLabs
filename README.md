@@ -1,4 +1,4 @@
-# ЛР2
+# ЛР3
 ### Задание А №1
 ```python
 def normalize(text: str, *, casefold: bool = True, yo2e: bool = True) -> str:
