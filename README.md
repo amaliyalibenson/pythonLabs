@@ -11,7 +11,7 @@ def normalize(text: str, *, casefold: bool = True, yo2e: bool = True) -> str:
         text = text.casefold()
         #к нижнему регистру привели
     if yo2e == True:
-        text = text.replace('é', 'e').replace('è', 'e').replace('ê', 'e').replace('ë', 'e').replace('ē', 'e').replace('ĕ', 'e').replace('ė', 'e').replace('ę', 'e')
+        text = text.replace('é', 'e').replace('è', 'e').replace('ê', 'e').replace('ë', 'e').replace('ē', 'e').replace('ĕ', 'e').replace('ė', 'e').replace('ę', 'e').replace('ё', 'e')
         #реплейсаем ешки
     spec = {'\t', '\r', '\n'}
     for x in spec:
