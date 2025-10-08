@@ -1,5 +1,6 @@
 from sys import *
 from src.lib.text import normalize, tokenize, count_freq, top_n
+
 TABLE_MODE = 1  #константа
 
 def main(): #читаем весь ввод из stdin (до EOF(end of file)(ctr+D))

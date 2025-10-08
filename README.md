@@ -120,4 +120,4 @@ def main(): #читаем весь ввод из stdin (до EOF(end of file)(ct
 if __name__ == "__main__":
     main()
 ```
-![exB](/images/lab03/exB.png)
+![exB](/images/lab03/ex0b.png)
