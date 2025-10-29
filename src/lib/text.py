@@ -70,8 +70,8 @@ def top_n(freq: dict[str, int], n: int = 5) -> list[tuple[str, int]]:
     '''
     Вернуть топ-N по убыванию частоты; при равенстве — по алфавиту слова.
     '''
-    kolvo= count_freq(freq) #создаем с помощью айтемс список кортежей и делаем его полноценным списком (без "dict_items")
-    return kolvo
+    kolvo= list(count_freq(freq).items()) #создаем с помощью айтемс список кортежей и делаем его полноценным списком (без "dict_items")
+    return kolvo[:n]
 
 
 

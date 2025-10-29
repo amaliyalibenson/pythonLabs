@@ -1,0 +1,91 @@
+
+import sys
+import argparse
+from pathlib import Path
+# Добавляем пути для импорта модулей
+
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+
+from src.lab04.io_txt_csv import read_text, write_csv, ensure_parent_dir
+from src.lib.text import normalize, tokenize, count_freq, top_n
+
+
+def generate_report(input_file: Path, output_file: Path, encoding: str = "utf-8") -> dict:
+    """
+    Генерирует отчет по словам из входного файла.
+
+    Args:
+        input_file: путь к входному текстовому файлу
+        output_file: путь для сохранения CSV отчета
+        encoding: кодировка входного файла
+
+    Returns:
+        Словарь с основной статистикой
+
+    Raises:
+        FileNotFoundError: если входной файл не существует
+        UnicodeDecodeError: если не удается декодировать файл
+    """
+    # Читаем и обрабатываем текст
+    text = read_text(input_file, encoding=encoding)
+    normalized_text = normalize(text)
+    tokens = tokenize(normalized_text)
+
+    # Считаем статистику
+    frequencies = count_freq(tokens)
+    sorted_words = top_n(frequencies, len(frequencies))  # все слова отсортированные
+
+    # Подготавливаем данные для CSV
+    csv_rows = []
+    for word, count in sorted_words:
+        csv_rows.append((word, count))
+
+    # Записываем CSV
+    ensure_parent_dir(output_file)
+    write_csv(csv_rows, output_file, header=("word", "count"))
+
+    # Возвращаем статистику для вывода в консоль
+    return {
+        'total_words': len(tokens),
+        'unique_words': len(frequencies),
+        'top_5': top_n(frequencies, 5)
+    }
+
+
+if __name__ == '__main__':
+    # жестко заданные пути
+    input_file = Path('data/lab04/input.txt')  # входной файл
+    output_file = Path('data/lab04/report.csv')  # выходной файл
+    encoding = 'utf-8'  # кодировка
+
+    # проверка аргументов командной строки
+    #sys.argv - это список (массив), который содержит все аргументы командной строки, переданные при запуске Python-скрипта.
+    if len(sys.argv) > 1:
+        input_file = Path(sys.argv[1])  # первый аргумент - входной файл
+    if len(sys.argv) > 2:
+        output_file = Path(sys.argv[2])  # второй аргумент - выходной файл
+    if len(sys.argv) > 3:
+        encoding = sys.argv[3]  # третий аргумент - кодировка
+
+    try:
+        # анализируем файл и получаем статистику
+        stats = generate_report(input_file, output_file, encoding)
+
+        # Выводим результаты в консоль
+        print(f"Всего слов: {stats['total_words']}")
+        print(f"Уникальных слов: {stats['unique_words']}")
+        print("Топ-5:")
+        for word, count in stats['top_5']:
+            print(f"{word}:{count}")
+
+        print(f"\nОтчет сохранен в: {output_file}")
+
+    except FileNotFoundError:
+        print(f"Ошибка: файл {input_file} не найден")
+        sys.exit(1)
+    except UnicodeDecodeError:
+        print(f"Ошибка: не удается прочитать файл {input_file} в кодировке {encoding}")
+        sys.exit(1)
+    except Exception as e:
+        print(f"Произошла ошибка: {e}")
+        sys.exit(1)

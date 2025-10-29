@@ -13,7 +13,7 @@ def main(): #читаем весь ввод из stdin (до EOF(end of file)(ct
     normalized_text = normalize(text)
     tokens = tokenize(normalized_text)
     count_word = count_freq(tokens)
-    top_words = top_n(count_word, 5)
+    top_words = list(count_freq(tokens).items())
     print("Всего слов:", len(tokens))
     print("Уникальных слов:", len(count_word))
 
