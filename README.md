@@ -52,27 +52,26 @@ def ensure_parent_dir(path: str | Path) -> None:
     p.parent.mkdir(parents=True, exist_ok=True) # создаем директории, 
     # parents=True создает все родительские директории, exist_ok=True игнорирует существующие
 ```
-##тест1 
+## тест1 
 ![1](/images/lab04/ex01.png)
 ![2](/images/lab04/ex01.2.png)
 
-##тест2
+## тест2
 ![3](/images/lab04/ex02.png)
 ![4](/images/lab04/ex02.2.png)
 
-##тест3
+## тест3
 ![5](/images/lab04/ex03.png)
 ![6](/images/lab04/ex03.2.png)
 ![7](/images/lab04/ex03.3.png)
 
-##тест4
+## тест4
 ![8](/images/lab04/ex04.png)
 ![9](/images/lab04/ex04.2.png)
 
 ### Задание B
 ```python
 import sys
-import argparse
 from pathlib import Path
 # Добавляем пути для импорта модулей
 
@@ -149,17 +148,17 @@ if __name__ == '__main__':
         sys.exit(1)
 ```
 
-##Тест А 
+## Тест А 
 ![10](/images/lab04/exA1.png)
 ![11](/images/lab04/exA2.png)
 ![12](/images/lab04/exA3.png)
 
-##Тест B
+## Тест B
 ![13](/images/lab04/exB1.png)
 ![14](/images/lab04/exB2.png)
 ![15](/images/lab04/exB3.png)
 
-##Тест C
+## Тест C
 ![16](/images/lab04/exC1.png)
 ![17](/images/lab04/exC2.png)
 ![18](/images/lab04/exC3.png)
