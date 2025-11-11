@@ -2,7 +2,6 @@
 import sys
 from pathlib import Path
 # Добавляем пути для импорта модулей
-
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from src.lab04.io_txt_csv import read_text, write_csv, ensure_parent_dir
