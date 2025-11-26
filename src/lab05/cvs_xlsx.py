@@ -71,4 +71,4 @@ def csv_to_xlsx(csv_path: str, xlsx_path: str) -> None:
         raise ValueError(f"Ошибка сохранения XLSX: {e}")
 
 
-csv_to_xlsx("data/samples/people1.csv","data/out/people.xlsx")
+csv_to_xlsx("src/lab06/data/samples/people1.csv", "src/lab06/data/out/people.xlsx")

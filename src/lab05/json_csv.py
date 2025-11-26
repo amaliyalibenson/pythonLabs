@@ -1,7 +1,8 @@
 import json
 import csv
 from pathlib import Path
-
+import sys
+sys.path.append('/Users/amalialibenson/Desktop/pythonLabs/src/lab06')
 
 def json_to_csv(json_path: str, csv_path: str) -> None:
     """
@@ -98,5 +99,5 @@ def csv_to_json(csv_path: str, json_path: str) -> None:
         raise ValueError(f"Ошибка записи JSON: {e}")
 
 
-json_to_csv("data/samples/people.json", "data/out/people_from_json.csv")
-csv_to_json("data/samples/people1.csv", "data/out/people_from_csv.json")
+json_to_csv("src/lab06/data/samples/people2.json", "src/lab06/data/out/people_from_json.csv")
+csv_to_json("src/lab06/data/samples/people1.csv", "src/lab06/data/out/people_from_csv.json")

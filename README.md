@@ -1,197 +1,118 @@
-# ЛР5
-### Задание А
-```python
-import json
-import csv
-from pathlib import Path
-
-
-def json_to_csv(json_path: str, csv_path: str) -> None:
-    """
-    Преобразует JSON-файл в CSV.
-    Поддерживает список словарей [{...}, {...}], заполняет отсутствующие поля пустыми строками.
-    Кодировка UTF-8.
-    FileNotFoundError: Если JSON файл не существует
-    ValueError: Если JSON пустой, не список или содержит не словари
-    """
-    # проверка существования файла
-    json_file = Path(json_path) #создаем объект Path для работы с путями
-    if not json_file.exists():
-        raise FileNotFoundError(f"JSON файл не найден: {json_path}")
-    # чтение JSON
-    try:
-        with open(json_path, 'r', encoding='utf-8') as f:
-            data = json.load(f) #загружает JSON из файлового объекта
-    except json.JSONDecodeError as e: #исключение при синтаксических ошибках в JSON
-        raise ValueError(f"Некорректный JSON формат: {e}")
-
-    # валидация данных
-    if not data:
-        raise ValueError("Пустой JSON или неподдерживаемая структура")
-    if not isinstance(data, list):
-        raise ValueError("JSON должен содержать список объектов")
-    if not all(isinstance(item, dict) for item in data): #проверяем что ВСЕ элементы словари
-        raise ValueError("Все элементы JSON должны быть словарями")
-
-    # получение заголовков из первого элемента
-    if not data[0]:
-        raise ValueError("Первый элемент не может быть пустым словарем")
-
-    fieldnames = list(data[0].keys()) #метод словаря, который возвращает объект представления, содержащий все ключи словаря
-
-    # запись CSV
-    try:
-        with open(csv_path, 'w', encoding='utf-8', newline='') as f: #newline='' предотвращает проблемы с переносами строк в Windows
-            writer = csv.DictWriter(f, fieldnames=fieldnames)
-            #позволяет записывать словари в CSV-файл. Он создает объект, который сопоставляет ключи словаря с выходными строками, где f — это объект файла, а fieldnames — список ключей, определяющих порядок столбцов.
-            writer.writeheader()
-            writer.writerows(data) #записывает все данные сразу
-    except Exception as e:
-        raise ValueError(f"Ошибка записи CSV: {e}")
-
-
-def csv_to_json(csv_path: str, json_path: str) -> None:
-    """
-    Преобразует CSV в JSON
-    Заголовок обязателен, значения сохраняются как строки.
-    json.dump(..., ensure_ascii=False, indent=2)
-    FileNotFoundError: Если CSV файл не существует
-    ValueError: Если CSV пустой или без заголовка
-    """
-    # проверка существования файла
-    csv_file = Path(csv_path)
-    if not csv_file.exists():
-        raise FileNotFoundError(f"CSV файл не найден: {csv_path}")
-    data = []
-    # чтение CSV
-    try:
-        with open(csv_path, 'r', encoding='utf-8') as f:
-            reader = csv.DictReader(f) #читает CSV как список словарей, где ключи - заголовки
-            # проверка заголовков
-            if not reader.fieldnames: #автоматически получает заголовки из первой строки
-                raise ValueError("CSV файл не содержит заголовков")
-            for row in reader:
-                # преобразование пустых строк в None и чисел в int/float
-                processed_row = {} #создаем новый словарь для обработанных данных
-                for key, value in row.items():
-                    if value == '': 
-                        processed_row[key] = None #проверяем пустые строки, заменяем на None
-                    else:
-                        # попытка преобразовать в число
-                        try:
-                            if '.' in value: #проверяем есть ли десятичная точка
-                                processed_row[key] = float(value)
-                            else:
-                                processed_row[key] = int(value)
-                        except ValueError:
-                            processed_row[key] = value #если преобразование не удалось, оставляем строкой
-
-                data.append(processed_row)
-
-    except Exception as e:
-        raise ValueError(f"Ошибка чтения CSV: {e}")
-    # валидация данных
-    if not data:
-        raise ValueError("CSV файл пустой или содержит только заголовок")
-    # запись JSON
-    try:
-        with open(json_path, 'w', encoding='utf-8') as f:
-            json.dump(data, f, ensure_ascii=False, indent=2) #записывает Python объект в JSON файл
-            #ensure_ascii=False разрешает русские символы (не экранирует как \u0430). indent=2 красивое форматирование с отступами
-    except Exception as e:
-        raise ValueError(f"Ошибка записи JSON: {e}")
-
-
-json_to_csv("data/samples/people.json", "data/out/people_from_json.csv")
-csv_to_json("data/samples/people1.csv", "data/out/people_from_csv.json")
-```
-## тест json_to_csv
-![1](/images/lab05/ex01.png)
-![2](/images/lab04/ex02.png)
-## тест csv_to_json
-![3](/images/lab05/ex03.png)
-![4](/images/lab05/ex04.png)
-
-### Задание B
+# ЛР6
+### CLI_text
 
 ```python
-import csv
+import argparse
 from pathlib import Path
-from openpyxl import Workbook
-from openpyxl.utils import get_column_letter
+from src.lib.text import tokenize, count_freq, top_n
 
 
-def csv_to_xlsx(csv_path: str, xlsx_path: str) -> None:
-    """
-    Конвертирует CSV в XLSX.
-    Использовать openpyxl ИЛИ xlsxwriter.
-    Первая строка CSV — заголовок.
-    Лист называется "Sheet1".
-    Колонки — автоширина по длине текста (не менее 8 символов).
-    FileNotFoundError: Если CSV файл не существует
-    ValueError: Если CSV пустой или без заголовка
-    """
-    # проверка существования файла
-    csv_file = Path(csv_path)
-    if not csv_file.exists():
-        raise FileNotFoundError(f"CSV файл не найден: {csv_path}")
-
-    data = []
-
-    # чтение CSV
-    try:
-        with open(csv_path, 'r', encoding='utf-8') as f:
-            reader = csv.reader(f) #читает CSV как список списков (в отличие от DictReader)
-            for row in reader:
-                data.append(row)
-    except Exception as e:
-        raise ValueError(f"Ошибка чтения CSV: {e}")
-
-    # валидация данных
-    if not data:
-        raise ValueError("CSV файл пустой")
-
-    if not data[0]:  # Проверка заголовка
-        raise ValueError("CSV файл не содержит заголовка")
-
-    # создание Excel книги
-    wb = Workbook() #создает новую Excel книгу
-    ws = wb.active #получает активный лист (по умолчанию создается один)
-    ws.title = "Sheet1" #переименовывает лист
-
-    # запись данных
-    for row in data:
-        ws.append(row) #добавляет целую строку в Excel. Автоматически определяет типы данных (строки, числа, даты)
-
-    # настройка авто-ширины колонок
-    for col_num, column_cells in enumerate(ws.columns, 1): #перебираем колонки с номерами начиная с 1
-        #ws.columns - генератор всех колонок листа
-        max_length = 0
-        column_letter = get_column_letter(col_num) #преобразует номер в букву (1→A, 2→B, 27→AA)
-
-        for cell in column_cells:
-            try:
-                if len(str(cell.value)) > max_length: #cell.value получаем значение ячейки
-                    max_length = len(str(cell.value))
-            except:
-                pass
-
-        # минимальная ширина 10, максимальная 50
-        adjusted_width = min(max_length + 2, 50) # добавляем запас в 2 символа и ограничиваем максимальную ширину 50
-        adjusted_width = max(adjusted_width, 10) #ограничиваем максимальную ширину 50
-
-        ws.column_dimensions[column_letter].width = adjusted_width #устанавливаем вычисленную ширину
-
-    # сохранение файла
-    try:
-        wb.save(xlsx_path)
-        #wb.save() - записывает книгу в файл. Автоматически определяет формат по расширению (.xlsx)
-    except Exception as e:
-        raise ValueError(f"Ошибка сохранения XLSX: {e}")
 
 
-csv_to_xlsx("data/samples/people1.csv","data/out/people.xlsx")
+def main(): #объявление главной функции программы
+    parser = argparse.ArgumentParser(description='CLI-утилиты лабораторной №6') #создает основной парсер аргументов
+    #парсер это программа или часть программы, которая анализирует и обрабатывает параметры (аргументы), передаваемые при запуске скрипта из командной строки
+    subparsers = parser.add_subparsers(dest='command')#создает подкоманды - в дальнейшем cat и stats
+
+    # Подкоманда cat - утилита для просмотра содержимого текстовых файлов в терминале.
+    #/stats позволяет связать «селекторы» и «задачи» с нужной сущностью/блоком и одной из его статистики
+    cat_parser = subparsers.add_parser("cat", help="Вывести содержимое файла")
+    cat_parser.add_argument("--input", required=True, help="Путь к входному файлу")
+    cat_parser.add_argument("-n", action="store_true", help="Нумеровать строки")
+    '''action="store_true" - если флаг указан, значение становится True, иначе False'''
+
+    #/stats позволяет связать «селекторы» и «задачи» с нужной сущностью/блоком и одной из его статистики
+    stats_parser = subparsers.add_parser("stats", help="Частоты слов")
+    stats_parser.add_argument("--input", required=True)
+    stats_parser.add_argument("--top", type=int, default=5)
+    '''type=int - автоматически преобразует введенное значение в число, по дефолту
+       выводит топ-5'''
+
+    args = parser.parse_args()  # "Анализирует" значения на входе
+
+    file = Path(args.input)
+
+    if args.command == "cat":
+        with open(file, 'r', encoding='utf-8') as f:
+            count = 1
+            for line in f:  # Построчное чтение файла
+                line = line.rstrip("\n")  # Очищаем строку от символа переноса
+                if args.n:  # Если указан флаг -n, то проводим нумерацию строк
+                    print(f'{count}: {line}')
+                    count += 1
+                else:
+                    print(line)
+
+    elif args.command == 'stats':
+        with open(file, 'r', encoding='utf-8') as f:
+            file = [i for i in f] 
+            tokens = tokenize(''.join(file))
+            freq = count_freq(tokens)
+            top = top_n(freq, n=args.top)
+            '''Работаем с входными данными'''
+
+            num = 1
+
+            for word, count in top:
+                print(f'{num}. {word} - {count}')
+                num += 1
+
+
+# Точка - запуск программы
+if __name__ == "__main__":
+    main()
 ```
-## тест 
-![5](/images/lab05/ex05.png)
-![6](/images/lab05/ex06.png)
+![1](/images/lab06/01.png)
+![2](/images/lab06/02.png)
+![3](/images/lab06/03.png)
+![4](/images/lab06/04.png)
+![5](/images/lab06/05.png)
+![6](/images/lab06/06.png)
+
+### CLI_convert
+
+```python
+import argparse
+import sys
+from src.lab05.json_csv import json_to_csv
+from src.lab05.json_csv import csv_to_json
+from src.lab05.cvs_xlsx import csv_to_xlsx
+
+def main():
+    parser = argparse.ArgumentParser(description="Конвертеры данных")
+    sub = parser.add_subparsers(dest="command")
+
+    p1 = sub.add_parser("json2csv")
+    p1.add_argument("--in", dest="input", required=True)
+    p1.add_argument("--out", dest="output", required=True)
+
+    p2 = sub.add_parser("csv2json")
+    p2.add_argument("--in", dest="input", required=True)
+    p2.add_argument("--out", dest="output", required=True)
+
+    p3 = sub.add_parser("csv2xlsx")
+    p3.add_argument("--in", dest="input", required=True)
+    p3.add_argument("--out", dest="output", required=True)
+
+    args = parser.parse_args() # "Анализирует" значения на входе
+
+    if args.command == "json2csv":
+        # Python -m src.lab06.cli_convert json2csv --in data/samples/people2.json --out data/out/people_from_json.csv
+        json_to_csv(json_path=args.input, csv_path=args.output)
+
+    if args.command == "csv2json":
+        # Python -m src.lab06.cli_convert csv2json --in data/samples/people.csv --out data/out/people_from_csv.json
+        csv_to_json(csv_path=args.input, json_path=args.output)
+
+    if args.command == "csv2xlsx":
+        # Python -m src.lab06.cli_convert csv2xlsx --in data/samples/cities1.csv --out data/out/cities.xlsx
+        csv_to_xlsx(csv_path=args.input, xlsx_path=args.output)
+
+if __name__ == "__main__":
+    main()
+```
+![7](/images/lab06/07.png)
+![8](/images/lab06/08.png)
+![9](/images/lab06/09.png)
+![10](/images/lab06/10.png)
+![11](/images/lab06/11.png)

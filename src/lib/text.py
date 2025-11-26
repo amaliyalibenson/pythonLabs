@@ -10,7 +10,7 @@ def normalize(text: str, *, casefold: bool = True, yo2e: bool = True) -> str:
     if yo2e == True:
         text = text.replace('é', 'e').replace('è', 'e').replace('ê', 'e').replace('ë', 'e').replace('ē', 'e').replace('ĕ', 'e').replace('ė', 'e').replace('ę', 'e').replace('ё', 'e')
         #реплейсаем ешки
-    spec = {'\t', '\r', '\n'}
+    spec = {r'\t', r'\r', r'\n'}
     for x in spec:
         text = text.replace(x, ' ') #реплейсаем с помощью словаря
     while '  ' in text:  #удаляем двойные пробелы пока они есть
@@ -73,13 +73,4 @@ def top_n(freq: dict[str, int], n: int = 5) -> list[tuple[str, int]]:
     kolvo= list(count_freq(freq).items()) #создаем с помощью айтемс список кортежей и делаем его полноценным списком (без "dict_items")
     return kolvo[:n]
 
-
-
-'''
-n="ПрИвЕт\nМИр\t"
-print(normalize(n))
-
-t="привет мир"
-print(tokenize(t))
-'''
 
