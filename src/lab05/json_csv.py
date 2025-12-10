@@ -2,7 +2,9 @@ import json
 import csv
 from pathlib import Path
 import sys
-sys.path.append('/Users/amalialibenson/Desktop/pythonLabs/src/lab06')
+
+sys.path.append("/Users/amalialibenson/Desktop/pythonLabs/src/lab06")
+
 
 def json_to_csv(json_path: str, csv_path: str) -> None:
     """
@@ -18,7 +20,7 @@ def json_to_csv(json_path: str, csv_path: str) -> None:
         raise FileNotFoundError(f"JSON файл не найден: {json_path}")
     # чтение JSON
     try:
-        with open(json_path, 'r', encoding='utf-8') as f:
+        with open(json_path, "r", encoding="utf-8") as f:
             data = json.load(f)
     except json.JSONDecodeError as e:
         raise ValueError(f"Некорректный JSON формат: {e}")
@@ -35,13 +37,15 @@ def json_to_csv(json_path: str, csv_path: str) -> None:
     if not data[0]:
         raise ValueError("Первый элемент не может быть пустым словарем")
 
-    fieldnames = list(data[0].keys()) #метод словаря, который возвращает объект представления (view object), содержащий все ключи словаря
+    fieldnames = list(
+        data[0].keys()
+    )  # метод словаря, который возвращает объект представления (view object), содержащий все ключи словаря
 
     # запись CSV
     try:
-        with open(csv_path, 'w', encoding='utf-8', newline='') as f:
+        with open(csv_path, "w", encoding="utf-8", newline="") as f:
             writer = csv.DictWriter(f, fieldnames=fieldnames)
-            #позволяет записывать словари в CSV-файл. Он создает объект, который сопоставляет ключи словаря с выходными строками, где f — это объект файла, а fieldnames — список ключей, определяющих порядок столбцов.
+            # позволяет записывать словари в CSV-файл. Он создает объект, который сопоставляет ключи словаря с выходными строками, где f — это объект файла, а fieldnames — список ключей, определяющих порядок столбцов.
             writer.writeheader()
             writer.writerows(data)
     except Exception as e:
@@ -63,7 +67,7 @@ def csv_to_json(csv_path: str, json_path: str) -> None:
     data = []
     # чтение CSV
     try:
-        with open(csv_path, 'r', encoding='utf-8') as f:
+        with open(csv_path, "r", encoding="utf-8") as f:
             reader = csv.DictReader(f)
             # проверка заголовков
             if not reader.fieldnames:
@@ -72,12 +76,12 @@ def csv_to_json(csv_path: str, json_path: str) -> None:
                 # преобразование пустых строк в None и чисел в int/float
                 processed_row = {}
                 for key, value in row.items():
-                    if value == '':
+                    if value == "":
                         processed_row[key] = None
                     else:
                         # попытка преобразовать в число
                         try:
-                            if '.' in value:
+                            if "." in value:
                                 processed_row[key] = float(value)
                             else:
                                 processed_row[key] = int(value)
@@ -93,11 +97,15 @@ def csv_to_json(csv_path: str, json_path: str) -> None:
         raise ValueError("CSV файл пустой или содержит только заголовок")
     # запись JSON
     try:
-        with open(json_path, 'w', encoding='utf-8') as f:
+        with open(json_path, "w", encoding="utf-8") as f:
             json.dump(data, f, ensure_ascii=False, indent=2)
     except Exception as e:
         raise ValueError(f"Ошибка записи JSON: {e}")
 
 
-json_to_csv("src/lab06/data/samples/people2.json", "src/lab06/data/out/people_from_json.csv")
-csv_to_json("src/lab06/data/samples/people1.csv", "src/lab06/data/out/people_from_csv.json")
+json_to_csv(
+    "src/lab06/data/samples/people2.json", "src/lab06/data/out/people_from_json.csv"
+)
+csv_to_json(
+    "src/lab06/data/samples/people1.csv", "src/lab06/data/out/people_from_csv.json"
+)

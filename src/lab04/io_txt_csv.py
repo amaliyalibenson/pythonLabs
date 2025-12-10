@@ -2,24 +2,27 @@ import csv
 from pathlib import Path
 from typing import Iterable, Sequence
 
+
 def read_text(path: str | Path, encoding: str = "utf-8") -> str:
-    '''
+    """
     Открыть файл на чтение в указанной кодировке и вернуть содержимое как одну строку.
     Обрабатывать ошибки: если файл не найден — поднимать FileNotFoundError (пусть падает),
     если кодировка не подходит — поднимать UnicodeDecodeError (пусть падает).
-    '''
+    """
     p = Path(path)
     if not p.exists():  # Явная проверка существования файла
-        raise FileNotFoundError('нет файла')
+        raise FileNotFoundError("нет файла")
     return p.read_text(encoding=encoding)
 
 
-def write_csv(rows: list[tuple | list], path: str | Path, header: tuple[str, ...] | None = None) -> None:
-    '''
+def write_csv(
+    rows: list[tuple | list], path: str | Path, header: tuple[str, ...] | None = None
+) -> None:
+    """
     Создать/перезаписать CSV с разделителем , .
     Если передан header, записать его первой строкой.
     Проверить, что каждая строка в rows имеет одинаковую длину (иначе ValueError).
-    '''
+    """
     p = Path(path)
     rows = list(rows)
     with p.open("w", newline="", encoding="utf-8") as f:
@@ -29,7 +32,7 @@ def write_csv(rows: list[tuple | list], path: str | Path, header: tuple[str, ...
         if rows:
             for r in rows:
                 if len(r) != len(rows[0]):
-                    raise ValueError('строки не одинаковой длины')
+                    raise ValueError("строки не одинаковой длины")
         for r in rows:
             w.writerow(r)
 

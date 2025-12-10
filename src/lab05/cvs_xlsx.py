@@ -23,7 +23,7 @@ def csv_to_xlsx(csv_path: str, xlsx_path: str) -> None:
 
     # чтение CSV
     try:
-        with open(csv_path, 'r', encoding='utf-8') as f:
+        with open(csv_path, "r", encoding="utf-8") as f:
             reader = csv.reader(f)
             for row in reader:
                 data.append(row)

@@ -1,4 +1,4 @@
-m = int(input('Минуты: '))
-hour= m//60
+m = int(input("Минуты: "))
+hour = m // 60
 minut = m % 60
-print(hour, ':', minut, sep = '')
+print(hour, ":", minut, sep="")
