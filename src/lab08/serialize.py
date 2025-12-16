@@ -46,5 +46,5 @@ stud = [
 ]
 
 
-students_to_json(stud, "data/out/students_output.json")
-print(students_from_json("data/samples/students_input.json"))
+students_to_json(stud, "../lab09/data/out/students_output.json")
+print(students_from_json("../lab09/data/samples/students_input.json"))
